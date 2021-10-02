@@ -1,17 +1,31 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+import React, { Component } from "react";
+import ReactDOM from "react-dom";
+import { ajax } from 'rxjs/ajax';
+import { map } from 'rxjs/operators';
+class App extends Component {
+   constructor() {
+      super();
+      this.state = { data: [] };
+   }
+   componentDidMount() {
+      const response = ajax('https://jsonplaceholder.typicode.com/users').pipe(map(e => e.response));
+      response.subscribe(res => {
+         this.setState({ data: res });
+      });
+   }
+   render() {
+      return (
+         <div>
+            <h3>Using RxJS with ReactJS</h3>
+            <ul>
+               {this.state.data.map(el => (
+                  <li>
+                     {el.id}: {el.name}
+                  </li>
+               ))}
+            </ul>
+         </div>
+      );
+   }
+}
+ReactDOM.render(<App />, document.getElementById("root"));
